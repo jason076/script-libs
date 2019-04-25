@@ -1,6 +1,10 @@
-# This library contains functions to make using
-# posix compatible script libraries more pleasant. 
-
+# This library contains functions to manage posix compliant 
+# shell script libraries written according to the standards from
+# https://github.com/jason076/script-libs
+#
+# AUTHOR: Jonas Erbe
+# GITHUB: https://github.com/jason076
+# REPOSITORY: https://github.com/jason076/script-libs
 
 #######################################
 # Loads a script library and verifies that the library is not loaded again, 
@@ -35,10 +39,9 @@ libmgmt__load() {
       libloader_libpath="./${libloader_libname}"
     elif [ -f lib/$libloader_libname ]; then
       libloader_libpath=lib/${libloader_libname}
-    # Disabled because there is the possibility to call a library that 
-    # does not belong to the scripts scope.
-    # elif [ -f ../lib/$libloader_libname ]; then
-    # libloader_libpath=../lib/$libloader_libname
+    # TODO(jason076): Search up the directory hierachy with a while loop
+    elif [ -f ../lib/$libloader_libname ]; then
+      libloader_libpath=../lib/$libloader_libname
     elif [ -f ~/.local/lib/$libloader_libname ]; then
       libloader_libpath=~/.local/lib/$libloader_libname
     elif [ -f /usr/local/lib/$libloader_libname ]; then
@@ -52,9 +55,11 @@ libmgmt__load() {
       unset libloader_libguard
       return 0
     else
-      echo "Library not found!"
+      echo "Library \"$1\" not found in \"$0\"!"
       unset libloader_libguard
       return 1
     fi
   fi
 }
+
+# TODO Add function to unload a library

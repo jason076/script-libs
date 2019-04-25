@@ -1,19 +1,25 @@
+# Library to interact with the user. It tries to use dialog,
+# but defaults shell builtins if dialog is not available. 
 
-# Library for io-operations with dialog if available.
-# Otherwise it defaults to standard terminal io with echo.
+# AUTHOR: Jonas Erbe
+# GITHUB: https://github.com/jason076
+# REPOSITORY: https://github.com/jason076/script-libs
+
+# The library uses the libmgmt script from 
+# https://github.com/jason076/script-libs
+# to load other libraries with "libmgmt__load <lib_name>"
 
 # constants
 readonly YES_ALL_VAL_YES=YES
 readonly YES_ALL_VAL_NO=NO
+readonly IO_PREFIX='\n****BEGIN USER-INTERACTION****'
+readonly IO_POSTFIX='*****END USER-INTERACTION*****\n'
 
 # globals
 IO_DEFAULT_HEIGHT=0
 IO_DEFAULT_WIDTH=0
 IO_USE_DIALOG='FALSE'
 IO_INITIALIZED='FALSE'
-
-# load libraries
-libloader__load depmgt 
 
 #######################################
 # Initializes io 
@@ -31,7 +37,8 @@ libloader__load depmgt
 
 io__init() {
   if [ "$1" = "TRUE" ]; then
-    if depmgt__need_bin dialog; then
+    libmgmt__load "depmgmt"
+    if depmgmt__need "dialog"; then
       IO_USE_DIALOG='TRUE'
     else
       IO_USE_DIALOG='FALSE'
@@ -98,8 +105,10 @@ io__message() {
   if [ "${IO_USE_DIALOG}" = 'TRUE' ]; then
     dialog --msgbox "$1" "${2:-"${IO_DEFAULT_HEIGHT}"}" "${3:-"${IO_DEFAULT_WIDTH}"}" 
   else
+    echo "${IO_PREFIX}"
     echo "$1"
     io__wait
+    echo "${IO_POSTFIX}"
   fi
 	
 }
@@ -122,6 +131,7 @@ io__yes_no() {
     return $?
   else
     if [ "${YES_ALL:-${YES_ALL_VAL_NO}}" = "${YES_ALL_VAL_NO}" ]; then
+      echo "${IO_PREFIX}"
       echo $1
       read io_yn_answer
       case $io_yn_answer in
@@ -130,6 +140,7 @@ io__yes_no() {
         *) io__yes_no "Your answer is not valid.k\
           Please type y / yes or n / no and hit enter!"
       esac  
+      echo "${IO_POSTFIX}"
     else
         return 0
     fi
@@ -165,6 +176,7 @@ io__menu(){
     return ${io_menu_retval}
   else
     exec 3>&1 1>&2 2>&3
+    echo "${IO_PREFIX}"
 
     # print menu message
     echo "$1"
@@ -211,6 +223,8 @@ io__menu(){
         echo "Your answer was not valid."
       fi
     done
+
+    echo "${IO_POSTFIX}"
   
     # Cleanup 
     exec 2>&1 1>&3 3>&-
