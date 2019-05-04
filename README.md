@@ -1,4 +1,20 @@
+**Work in progress**
+
 This repository is a collection of posix compliant shell scripts. The library management script *libmgmt.sh* provides a convenient method to load shell libraries. It assures that a library gets loaded only once also if it gets included multiple times. Therefore it is possible that two librarys can depend on each other without creating an endless loading loop.
+
+# Libraries
+For more information please refer to the source code of the libraries. Every function has a header which explains its purpose and how to use it.
+### Library management (libmgmt.sh)
+Contains functions to manage posix compliant shell script libraries
+
+### Dependency management (depmgmt.sh)
+Contains functions to check for dependencies needed by other scripts                                                                         and installs them if they are missing
+
+### User interaction (io.sh)
+Library to interact with the user. It tries to use dialog, but defaults shell builtins if dialog is not available.
+
+### Common functions for WSL (wsl.sh)
+Contains common function to work with Windows Subsystem for Linux (WSL)
 
 # Usage
 1. Install the libraries you want to use from the *lib* folder to the system on which you want to run the script or bundle them directly with your script. At the moment the following locations are valid:
